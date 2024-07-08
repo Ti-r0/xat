@@ -8,7 +8,7 @@ async function triggerGitHubAction(username) {
     const response = await fetch(`https://api.github.com/repos/Ti-r0/xat/actions/workflows/update_data.yml/dispatches`, {
         method: 'POST',
         headers: {
-            'Authorization': `token YOUR_GITHUB_TOKEN`,
+            'Authorization': `token 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`,
             'Accept': 'application/vnd.github.v3+json'
         },
         body: JSON.stringify({
