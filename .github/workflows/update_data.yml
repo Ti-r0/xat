@@ -1,0 +1,39 @@
+name: Update Data JSON
+
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        description: 'Shortname'
+        required: true
+        type: string
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Fetch and update data
+      run: |
+        curl -o data.json https://ti-r0.github.io/xat/shortname/data.json
+        node update_data.js ${{ github.event.inputs.username }}
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add data.json
+        git commit -m 'Update data.json'
+        git push
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
