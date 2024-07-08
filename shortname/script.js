@@ -1,7 +1,7 @@
 document.getElementById('priceForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     const username = document.getElementById('username').value;
-    await triggerGitHubAction(username);
+    await updateAndDisplay(username);
 });
 
 async function triggerGitHubAction(username) {
@@ -19,8 +19,10 @@ async function triggerGitHubAction(username) {
 
     if (response.ok) {
         console.log(`Triggered update for ${username}`);
+        return true;
     } else {
         console.error('Failed to trigger update:', response.statusText);
+        return false;
     }
 }
 
@@ -44,12 +46,17 @@ function displayPriceChanges(entry) {
 }
 
 async function updateAndDisplay(username) {
-    await triggerGitHubAction(username);
-    const allData = await loadData();
-    const entry = findPreviousEntry(allData, username);
-    if (entry) {
-        displayPriceChanges(entry);
-    } else {
-        console.error('No data found for the username.');
+    const triggered = await triggerGitHubAction(username);
+    if (triggered) {
+        // Wait for some time to ensure GitHub Action has time to update the data
+        setTimeout(async () => {
+            const allData = await loadData();
+            const entry = findPreviousEntry(allData, username);
+            if (entry) {
+                displayPriceChanges(entry);
+            } else {
+                console.error('No data found for the username.');
+            }
+        }, 60000); // Wait for 1 minute
     }
 }
